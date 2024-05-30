@@ -18,13 +18,11 @@ export default function EndOfGameSettlement({
     } else if (player2MoneyBalance > player1MoneyBalance) {
       return "Player 2";
     } else {
-      return "It&apos;s a tie!";
+      return "It is a tie!";
     }
   };
 
   const winner = determineWinner();
-  const message = "You can&apos;t do that.";
-  const anotherMessage = "It&apos;s a great day! Use &apos; or &#39;.";
 
   return (
     <div className={styles.container}>
@@ -33,12 +31,12 @@ export default function EndOfGameSettlement({
         <p className={styles.moneyBalance}>Player 1 Money Balance: ${player1MoneyBalance}</p>
         <p className={styles.moneyBalance}>Player 2 Money Balance: ${player2MoneyBalance}</p>
       </div>
-      {winner !== "It&apos;s a tie!" ? (
+      {winner !== "It is a tie!" ? (
         <p className={styles.winner}>
           Woo-Hoo, {winner} won the Art Sprint, Congratulations!
         </p>
       ) : (
-        <p className={styles.winner}>It&apos;s a tie! Both players have the same money balance.</p>
+        <p className={styles.winner}>It is a tie! Both players have the same money balance.</p>
       )}
       <button className={styles.restartButton} onClick={onRestartGame}>
         Restart Game
