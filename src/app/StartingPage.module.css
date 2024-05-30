@@ -1,7 +1,7 @@
 .container {
   font-family: 'Courier New', Courier, monospace;
-  background-color: #f0e8d8;
-  color: #ffffff;
+  background-color: #1a1a1a;
+  color: #8cff00;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -13,33 +13,33 @@
   background-position: center;
   background-repeat: no-repeat;
 }
-  
-  .title {
-    font-size: 4rem;
-    font-weight: bold;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-  
-  .buttonContainer {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-  
-  .button {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1.5rem;
-    padding: 1rem 2rem;
-    background-color: #8c6e5e;
-    color: #f0e8d8;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button:disabled {
-    background-color: #d9c8b4;
-    cursor: not-allowed;
-  }
+
+.title {
+  font-size: 4rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.button {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  background-color: #4c4c4c;
+  color: #8cff00;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:disabled {
+  background-color: #2c2c2c;
+  cursor: not-allowed;
+}

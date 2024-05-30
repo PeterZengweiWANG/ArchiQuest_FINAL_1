@@ -1,7 +1,7 @@
 .newpage {
   font-family: 'Courier New', Courier, monospace;
-  background-color: #f0e8d8;
-  color: #4a4a4a;
+  background-color: #1a1a1a;
+  color: #8cff00;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -45,16 +45,18 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  background-color: #2c2c2c;
+  color: #8cff00;
 }
 
 .elementButtonSelected {
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
 }
 
 .elementButtonUnselected {
-  background-color: #d9c8b4;
-  color: #4a4a4a;
+  background-color: #2c2c2c;
+  color: #8cff00;
 }
 
 .generateButtonContainer {
@@ -67,8 +69,8 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -76,7 +78,7 @@
 }
 
 .generateButton:disabled {
-  background-color: #d9c8b4;
+  background-color: #2c2c2c;
   cursor: not-allowed;
 }
 
@@ -104,8 +106,8 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -128,8 +130,8 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -137,7 +139,7 @@
 }
 
 .musicPlayerButton:hover {
-  background-color: #6c5e4e;
+  background-color: #5c5c5c;
 }
 
 .playersContainer {
@@ -151,10 +153,10 @@
 
 .playerBox {
   flex: 1;
-  border: 2px solid #4a4a4a;
+  border: 2px solid #8cff00;
   border-radius: 8px;
   padding: 1rem;
-  background-color: #fff;
+  background-color: #1a1a1a;
   text-align: center;
   overflow: hidden;
   display: flex;
@@ -198,16 +200,18 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  background-color: #2c2c2c;
+  color: #8cff00;
 }
 
 .artCategoryButtonSelected {
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
 }
 
 .artCategoryButtonUnselected {
-  background-color: #d9c8b4;
-  color: #4a4a4a;
+  background-color: #2c2c2c;
+  color: #8cff00;
 }
 
 .elementContainer {
@@ -244,8 +248,8 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
@@ -257,25 +261,25 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: #fff;
-  border: 2px solid #4a4a4a;
+  background-color: #1a1a1a;
+  border: 2px solid #8cff00;
   border-radius: 8px;
-  padding: 20px;  /* Increased padding */
+  padding: 20px;
   display: flex;
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Courier New', Courier, monospace;
-  font-size: 1.2rem;  /* Increased font size */
-  color: #4a4a4a;
+  font-size: 1.2rem;
+  color: #8cff00;
   z-index: 1000;
-  min-height: 80px;  /* Ensure minimum height matches other elements */
+  min-height: 80px;
 }
 
 .dialogueAvatar {
-  width: 60px;  /* Increased avatar size */
-  height: 60px;  /* Increased avatar size */
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  margin-right: 20px;  /* Increased margin */
+  margin-right: 20px;
 }
 
 .comment {
@@ -299,6 +303,7 @@
   font-size: 1rem;
   font-weight: bold;
   margin-top: 0.5rem;
+  color: #8cff00;
 }
 
 .gameplayRoundContainer {
@@ -318,8 +323,8 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -327,7 +332,7 @@
 }
 
 .nextRoundButton:disabled {
-  background-color: #d9c8b4;
+  background-color: #2c2c2c;
   cursor: not-allowed;
 }
 
@@ -335,8 +340,8 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  background-color: #8c6e5e;
-  color: #f0e8d8;
+  background-color: #4c4c4c;
+  color: #8cff00;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -345,8 +350,6 @@
 }
 
 .seeResultButton:disabled {
-  background-color: #d9c8b4;
+  background-color: #2c2c2c;
   cursor: not-allowed;
 }
-
-
