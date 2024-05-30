@@ -36,3 +36,5 @@ export const generateArtCollectorNationalityPrompt =
 
 export const generateArtCollectorNamePrompt =
   "You are a curator assigning names to art collectors for an international exhibition. Generate an appropriate name for the art collector based on their nationality. Please output only the name without any additional words.";
+
+  
