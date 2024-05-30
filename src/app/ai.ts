@@ -1,5 +1,6 @@
 "use server";
 import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const groq_key = process.env.GROQ;
 const fal_key = process.env.FAL;
@@ -8,32 +9,32 @@ const groq = new Groq({
   apiKey: groq_key,
 });
 
-//These functions are running on our nextJS server. We can make requests to resources
-//And securely store our API keys and secrets.
+const genAI = new GoogleGenerativeAI(process.env.GEMINI ?? "");
 
-//We can call the Groq API and pass our user prompt, max tokens and system prompt.
 export async function getGroqCompletion(
   userPrompt: string,
   max_tokens: number,
-  systemPrompt: string = ""
+  systemPrompt: string = "",
+  temperature: number = 0.7,
+  top_p: number = 1
 ) {
+  const messages = [{ role: "system", content: systemPrompt }];
+  if (userPrompt.trim() !== "") {
+    messages.push({ role: "user", content: userPrompt });
+  }
+
   const completion = await groq.chat.completions.create({
-    messages: [
-      { role: "system", content: systemPrompt },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
+    messages: messages,
     model: "mixtral-8x7b-32768",
     max_tokens: max_tokens,
+    temperature: temperature,
+    top_p: top_p,
   });
   return (
     completion.choices[0]?.message?.content || "Oops, something went wrong."
   );
 }
 
-//This function makes a request to the FAL api and gets an image.
 export async function generateImageFal(prompt: string, image_size: string) {
   const response = await fetch(`https://fal.run/fal-ai/fast-turbo-diffusion`, {
     method: "POST",
@@ -50,33 +51,24 @@ export async function generateImageFal(prompt: string, image_size: string) {
 
   const responseJSON = await response.json();
 
-  //here we would normally save the image to a database and return the url
   return responseJSON?.images[0].url;
 }
 
-//speaker_url should be a link to a 30 second clip of audio
-export async function generateVoice(
-  text: string,
-  speaker_url: string = "https://cdn.themetavoice.xyz/speakers/bria.mp3"
-) {
-  console.log("generating audio");
-  const response = await fetch(`https://fal.run/fal-ai/metavoice-v1`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Key ${fal_key}`,
+export async function getGeminiVision(prompt: string, base64Image: string) {
+  const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+  const formatted = base64Image.split(",")[1];
+  const image = {
+    inlineData: {
+      data: formatted,
+      mimeType: "image/jpeg",
     },
-    body: JSON.stringify({
-      text: text,
-      audio_url: speaker_url,
-      speech_stability: 10,
-      speaker_similarity: 4,
-    }),
-  });
+  };
+  const result = await model.generateContent([prompt, image]);
+  return result.response.text();
+}
 
-  const responseJSON = await response.json();
-  console.log(responseJSON);
-  //here we would normally save the image to a database and return the url
-  return responseJSON?.audio_url.url;
+export async function getGeminiText(prompt: string) {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+  const result = await model.generateContent([prompt]);
+  return result.response.text();
 }

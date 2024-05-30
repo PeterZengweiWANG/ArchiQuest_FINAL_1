@@ -1,12 +1,40 @@
+"use client";
+
+import StartingPage from "./StartingPage";
 import Game from "./Game";
+import { useState } from "react";
+import styles from "./Game.module.css";
 
 export default function Home() {
+  const [gameMode, setGameMode] = useState<"single" | "double" | "playerVsAI" | null>(null);
+
+  const startSinglePlayerGame = () => {
+    setGameMode("single");
+  };
+
+  const startDoublePlayerGame = () => {
+    setGameMode("double");
+  };
+
+  const startPlayerVsAIGame = () => {
+    setGameMode("playerVsAI");
+  };
+
+  const handlePlayAgain = () => {
+    setGameMode(null);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <Game />
-      </div>
+    <main className={styles.container}>
+      {!gameMode ? (
+        <StartingPage
+          startSinglePlayerGame={startSinglePlayerGame}
+          startDoublePlayerGame={startDoublePlayerGame}
+          startPlayerVsAIGame={startPlayerVsAIGame}
+        />
+      ) : (
+        <Game onPlayAgain={handlePlayAgain} gameMode={gameMode} />
+      )}
     </main>
   );
 }
-

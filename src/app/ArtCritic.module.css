@@ -1,0 +1,26 @@
+.artCriticContainer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .artCriticImage {
+    width: 150px;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .artCriticName {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+  }
+  
+  .artCriticNationality {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .simplifiedCritique {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }

@@ -1,0 +1,332 @@
+.container {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #f0e8d8;
+  color: #4a4a4a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow: hidden; /* Ensure no scrollbars */
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.timer {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.elementGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.elementButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.elementButtonSelected {
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+}
+
+.elementButtonUnselected {
+  background-color: #d9c8b4;
+  color: #4a4a4a;
+}
+
+.generateButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.generateButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.generateButton:disabled {
+  background-color: #d9c8b4;
+  cursor: not-allowed;
+}
+
+.resultImage {
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  max-height: 60vh; /* Adjust as needed to fill the box while keeping aspect ratio */
+  object-fit: contain; /* Ensure the image scales properly */
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  cursor: pointer; /* Indicate clickable images */
+}
+
+.score {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.critique {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.playAgainButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.timeUpMessage {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.musicPlayer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.musicPlayerButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.musicPlayerButton:hover {
+  background-color: #6c5e4e;
+}
+
+.playersContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+  height: calc(100vh - 200px); /* Adjust height to ensure everything fits */
+  overflow: hidden;
+}
+
+.playerBox {
+  flex: 1;
+  border: 2px solid #4a4a4a;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fff;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.playerBoxContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.playerName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.artCategoryContainer {
+  margin-bottom: 1.5rem;
+}
+
+.artCategoryTitle {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.artCategoryGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.artCategoryButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.artCategoryButtonSelected {
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+}
+
+.artCategoryButtonUnselected {
+  background-color: #d9c8b4;
+  color: #4a4a4a;
+}
+
+.elementContainer {
+  margin-bottom: 1.5rem;
+}
+
+.elementTitle {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Full-screen image preview styles */
+.fullScreenPreview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.fullScreenImage {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.dialogueBox {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #fff;
+  border: 2px solid #4a4a4a;
+  border-radius: 8px;
+  padding: 20px;  /* Increased padding */
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.2rem;  /* Increased font size */
+  color: #4a4a4a;
+  z-index: 1000;
+  min-height: 80px;  /* Ensure minimum height matches other elements */
+}
+
+.dialogueAvatar {
+  width: 60px;  /* Increased avatar size */
+  height: 60px;  /* Increased avatar size */
+  border-radius: 50%;
+  margin-right: 20px;  /* Increased margin */
+}
+
+.comment {
+  text-align: left;
+}
+
+/* Slider styles */
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.slider {
+  width: 100%;
+  max-width: 200px;
+}
+
+.sliderLabel {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.gameplayRoundContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.gameplayRound {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.nextRoundButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nextRoundButton:disabled {
+  background-color: #d9c8b4;
+  cursor: not-allowed;
+}
