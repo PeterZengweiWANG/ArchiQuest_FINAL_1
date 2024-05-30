@@ -23,6 +23,9 @@ export default function EndOfGameSettlement({
   };
 
   const winner = determineWinner();
+  const message = "You can&apos;t do that.";
+const anotherMessage = "It's a great day! Use &apos; or &#39;.";
+
 
   return (
     <div className={styles.container}>

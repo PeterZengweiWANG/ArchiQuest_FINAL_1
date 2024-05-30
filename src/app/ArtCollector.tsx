@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getGroqCompletion, generateImageFal, getGeminiText } from "./ai";
 import {
   generateArtCollectorPrompt,
@@ -6,6 +6,7 @@ import {
   generateArtCollectorNationalityPrompt,
 } from "./prompts";
 import styles from "./ArtCollector.module.css";
+import Image from 'next/image';
 
 type ArtCollectorProps = {
   artworkValue: string;
@@ -29,9 +30,16 @@ export default function ArtCollector({ artworkValue, onAcceptOffer, onOfferCance
     generateArtCollector();
   }, []);
 
+  const generateInitialOfferMessage = useCallback(async () => {
+    const initialPrice = parseInt(artworkValue.slice(1).replace(/,/g, ""));
+    const prompt = `As an art collector, generate a sentence expressing your interest in purchasing the artwork and purpose the offer price of $${initialPrice.toLocaleString()}.`;
+    const message = await getGeminiText(prompt);
+    setInitialOfferMessage(message);
+  }, [artworkValue]);
+
   useEffect(() => {
     generateInitialOfferMessage();
-  }, [artworkValue]);
+  }, [generateInitialOfferMessage]);
 
   const generateArtCollector = async () => {
     const artCollectorNationality = await getGroqCompletion("", 10, generateArtCollectorNationalityPrompt, 0.8, 0.9);
@@ -44,13 +52,6 @@ export default function ArtCollector({ artworkValue, onAcceptOffer, onOfferCance
     const artCollectorDescription = `A portrait of ${trimmedArtCollectorName}, a ${artCollectorNationality} art collector, including their appearance, attire, and any distinguishing features.`;
     const artCollectorImageUrl = await generateImageFal(artCollectorDescription, "portrait_4_3");
     setArtCollectorImage(artCollectorImageUrl);
-  };
-
-  const generateInitialOfferMessage = async () => {
-    const initialPrice = parseInt(artworkValue.slice(1).replace(/,/g, ""));
-    const prompt = `As an art collector, generate a sentence expressing your interest in purchasing the artwork and purpose the offer price of $${initialPrice.toLocaleString()}.`;
-    const message = await getGeminiText(prompt);
-    setInitialOfferMessage(message);
   };
 
   const handleAcceptOffer = async () => {
@@ -111,7 +112,7 @@ export default function ArtCollector({ artworkValue, onAcceptOffer, onOfferCance
     <div className={styles.artCollectorContainer}>
       {artCollectorImage && (
         <>
-          <img src={artCollectorImage} alt="Art Collector" className={styles.artCollectorImage} />
+          <Image src={artCollectorImage} alt="Art Collector" className={styles.artCollectorImage} width={150} height={150} />
           <p className={styles.artCollectorName}>{artCollectorName}</p>
           <p className={styles.artCollectorNationality}>{artCollectorNationality}</p>
         </>

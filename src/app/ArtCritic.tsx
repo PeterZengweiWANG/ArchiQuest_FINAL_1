@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getGroqCompletion, generateImageFal, getGeminiVision } from "./ai";
 import {
   generateArtCriticPrompt,
@@ -7,6 +7,7 @@ import {
   generateSimplifiedCritiquePrompt,
 } from "./prompts";
 import styles from "./ArtCritic.module.css";
+import Image from 'next/image';
 
 type ArtCriticProps = {
   imageUrl: string;
@@ -22,9 +23,17 @@ export default function ArtCritic({ imageUrl }: ArtCriticProps) {
     generateArtCritic();
   }, []);
 
+  const generateSimplifiedCritique = useCallback(async () => {
+    if (imageUrl) {
+      const simplifiedCritiquePrompt = `${generateSimplifiedCritiquePrompt} The art critic is ${artCriticNationality}. Limit the critique to around 70 words.`;
+      const simplifiedCritique = await getGeminiVision(simplifiedCritiquePrompt, imageUrl);
+      setSimplifiedCritique(simplifiedCritique);
+    }
+  }, [imageUrl, artCriticNationality]);
+
   useEffect(() => {
     generateSimplifiedCritique();
-  }, [imageUrl, artCriticNationality]);
+  }, [generateSimplifiedCritique]);
 
   const generateArtCritic = async () => {
     const artCriticNationality = await getGroqCompletion("", 10, generateArtCriticNationalityPrompt, 0.8, 0.9);
@@ -39,19 +48,11 @@ export default function ArtCritic({ imageUrl }: ArtCriticProps) {
     setArtCriticImage(artCriticImageUrl);
   };
 
-  const generateSimplifiedCritique = async () => {
-    if (imageUrl) {
-      const simplifiedCritiquePrompt = `${generateSimplifiedCritiquePrompt} The art critic is ${artCriticNationality}. Limit the critique to around 70 words.`;
-      const simplifiedCritique = await getGeminiVision(simplifiedCritiquePrompt, imageUrl);
-      setSimplifiedCritique(simplifiedCritique);
-    }
-  };
-
   return (
     <div className={styles.artCriticContainer}>
       {artCriticImage && (
         <>
-          <img src={artCriticImage} alt="Art Critic" className={styles.artCriticImage} />
+          <Image src={artCriticImage} alt="Art Critic" className={styles.artCriticImage} width={150} height={150} />
           <p className={styles.artCriticName}>{artCriticName}</p>
           <p className={styles.artCriticNationality}>{artCriticNationality}</p>
         </>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getGroqCompletion, generateImageFal, getGeminiVision, getGeminiText } from "./ai";
 import {
   generateThemePrompt,
@@ -15,6 +15,7 @@ import ArtCritic from "./ArtCritic";
 import ArtCollector from "./ArtCollector";
 import EndOfGameSettlement from "./EndOfGameSettlement";
 import CharacterCreationPage from "./CharacterCreationPage";
+import Image from 'next/image';
 
 type SelectableButton = {
   text: string;
@@ -75,9 +76,31 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     musicPlayerRef.current = new MusicPlayer(tracks);
   }, []);
 
+  const generateThemeAndArtStyleAndCategories = useCallback(async () => {
+    const [generatedTheme, generatedArtStyle, generatedArtCategories] = await Promise.all([
+      getGroqCompletion("", 32, generateThemePrompt, 0.8, 0.9),
+      getGroqCompletion("", 32, generateArtStylePrompt, 0.8, 0.9),
+      getGroqCompletion("", 128, generateArtCategoriesPrompt, 0.8, 0.9),
+    ]);
+    setTheme(generatedTheme.trim());
+    setArtStyle(generatedArtStyle.trim());
+
+    const artCategoryArray = generatedArtCategories.split(",");
+    const artCategories = artCategoryArray.map((text: string) => ({
+      text: text.trim(),
+      selected: false,
+    }));
+    setArtCategoriesLeft(artCategories);
+    setArtCategoriesRight(artCategories);
+    setSelectedArtCategoriesLeft([]);
+    setSelectedArtCategoriesRight([]);
+
+    generateElements(generatedTheme);
+  }, []);
+
   useEffect(() => {
     generateThemeAndArtStyleAndCategories();
-  }, []);
+  }, [generateThemeAndArtStyleAndCategories]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -106,6 +129,32 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     }
   }, [timeLeft, selectedArtCategoriesLeft, selectedArtCategoriesRight, selectedElementsLeft, selectedElementsRight, currentPlayer]);
 
+  const generateImageRight = useCallback(async () => {
+    setIsGeneratingRight(true);
+    const imageDescription = await getGroqCompletion(
+      `Describe an artwork in the style of ${artStyle} that belongs to the following categories: ${selectedArtCategoriesRight.join(
+        ", "
+      )} and includes: ${selectedElementsRight.join(", ")}`,
+      256,
+      generateImagePrompt,
+      0.8,
+      0.9
+    );
+    const imageUrl = await generateImageFal(imageDescription, "landscape_16_9");
+    setImgRight(imageUrl);
+
+    const critiquePrompt = "Briefly describe the artwork in approximately 200 words. Be opinionated about its merits or failings.";
+    const critique = await getGeminiVision(critiquePrompt, imageUrl);
+    setCommentRight(critique);
+
+    const valuationPrompt = "As an experienced art appraiser, carefully analyze the provided image of the artwork. Consider factors such as the artist's skill, the complexity of the composition, the uniqueness of the style, and the overall aesthetic appeal. Based on your analysis, provide a fair market valuation for this artwork in US dollars, ranging from a few hundred dollars to several thousand dollars. Respond with just a number, no other text.";
+    const valuationResponse = await getGeminiVision(valuationPrompt, imageUrl);
+    const valuationNumber = parseFloat(valuationResponse.trim());
+    setValueRight(`$${valuationNumber.toLocaleString()}`);
+
+    setIsGeneratingRight(false);
+  }, [artStyle, selectedArtCategoriesRight, selectedElementsRight]);
+
   useEffect(() => {
     if (gameMode === "playerVsAI" && currentPlayer === "right" && !isGeneratingRight) {
       AIPlayer.playTurn(
@@ -115,35 +164,13 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
         generateImageRight
       );
     }
-  }, [gameMode, currentPlayer, isGeneratingRight, artCategoriesRight, elementsRight, artStyle]);
+  }, [gameMode, currentPlayer, isGeneratingRight, artCategoriesRight, elementsRight, artStyle, generateImageRight]);
 
   useEffect(() => {
     if (currentRound === 3 && (offerAcceptedLeft || offerCancelledLeft || offerAcceptedRight || offerCancelledRight)) {
       setSeeResultEnabled(true);
     }
   }, [currentRound, offerAcceptedLeft, offerCancelledLeft, offerAcceptedRight, offerCancelledRight]);
-
-  const generateThemeAndArtStyleAndCategories = async () => {
-    const [generatedTheme, generatedArtStyle, generatedArtCategories] = await Promise.all([
-      getGroqCompletion("", 32, generateThemePrompt, 0.8, 0.9),
-      getGroqCompletion("", 32, generateArtStylePrompt, 0.8, 0.9),
-      getGroqCompletion("", 128, generateArtCategoriesPrompt, 0.8, 0.9),
-    ]);
-    setTheme(generatedTheme.trim());
-    setArtStyle(generatedArtStyle.trim());
-
-    const artCategoryArray = generatedArtCategories.split(",");
-    const artCategories = artCategoryArray.map((text: string) => ({
-      text: text.trim(),
-      selected: false,
-    }));
-    setArtCategoriesLeft(artCategories);
-    setArtCategoriesRight(artCategories);
-    setSelectedArtCategoriesLeft([]);
-    setSelectedArtCategoriesRight([]);
-
-    generateElements(generatedTheme);
-  };
 
   const generateElements = async (theme: string) => {
     const elementString = await getGroqCompletion(
@@ -255,32 +282,6 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     setCurrentPlayer("right");
     setTimeLeft(40);
     setIsGeneratingLeft(false);
-  };
-
-  const generateImageRight = async () => {
-    setIsGeneratingRight(true);
-    const imageDescription = await getGroqCompletion(
-      `Describe an artwork in the style of ${artStyle} that belongs to the following categories: ${selectedArtCategoriesRight.join(
-        ", "
-      )} and includes: ${selectedElementsRight.join(", ")}`,
-      256,
-      generateImagePrompt,
-      0.8,
-      0.9
-    );
-    const imageUrl = await generateImageFal(imageDescription, "landscape_16_9");
-    setImgRight(imageUrl);
-
-    const critiquePrompt = "Briefly describe the artwork in approximately 200 words. Be opinionated about its merits or failings.";
-    const critique = await getGeminiVision(critiquePrompt, imageUrl);
-    setCommentRight(critique);
-
-    const valuationPrompt = "As an experienced art appraiser, carefully analyze the provided image of the artwork. Consider factors such as the artist's skill, the complexity of the composition, the uniqueness of the style, and the overall aesthetic appeal. Based on your analysis, provide a fair market valuation for this artwork in US dollars, ranging from a few hundred dollars to several thousand dollars. Respond with just a number, no other text.";
-    const valuationResponse = await getGeminiVision(valuationPrompt, imageUrl);
-    const valuationNumber = parseFloat(valuationResponse.trim());
-    setValueRight(`$${valuationNumber.toLocaleString()}`);
-
-    setIsGeneratingRight(false);
   };
 
   const playAgain = () => {
@@ -461,7 +462,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
                     </div>
                     {imgLeft && (
                       <div>
-                        <img src={imgLeft} alt="Generated Artwork" className={styles.resultImage} onClick={() => openFullScreen(imgLeft)} />
+                        <Image src={imgLeft} alt="Generated Artwork" className={styles.resultImage} width={500} height={300} onClick={() => openFullScreen(imgLeft)} />
                         <ArtCritic imageUrl={imgLeft} />
                         <ArtCollector
                           artworkValue={valueLeft}
@@ -524,7 +525,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
                     </div>
                     {imgRight && (
                       <div>
-                        <img src={imgRight} alt="Generated Artwork" className={styles.resultImage} onClick={() => openFullScreen(imgRight)} />
+                        <Image src={imgRight} alt="Generated Artwork" className={styles.resultImage} width={500} height={300} onClick={() => openFullScreen(imgRight)} />
                         <ArtCritic imageUrl={imgRight} />
                         <ArtCollector
                           artworkValue={valueRight}
@@ -596,7 +597,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
 
               {fullScreenImg && (
                 <div className={styles.fullScreenPreview}>
-                  <img src={fullScreenImg} alt="Full Screen Artwork" className={styles.fullScreenImage} style={{ transform: `scale(${zoomLevel})` }} />
+                  <Image src={fullScreenImg} alt="Full Screen Artwork" className={styles.fullScreenImage} width={1200} height={800} style={{ transform: `scale(${zoomLevel})` }} />
                   <button className={styles.closeButton} onClick={closeFullScreen}>Close</button>
                   <div style={{ position: "absolute", bottom: "20px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
                     <button className={styles.musicPlayerButton} onClick={zoomIn}>Zoom In</button>
