@@ -152,6 +152,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     const valuationNumber = parseFloat(valuationResponse.trim());
     setValueRight(`$${valuationNumber.toLocaleString()}`);
 
+
     setIsGeneratingRight(false);
   }, [player2ArtStyle, selectedArtCategoriesRight, selectedElementsRight]);
 
