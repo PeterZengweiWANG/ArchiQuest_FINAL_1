@@ -17,7 +17,7 @@ import EndOfGameSettlement from "./EndOfGameSettlement";
 import CharacterCreationPage from "./CharacterCreationPage";
 import Image from 'next/image';
 
-type SelectableButton = {
+export type SelectableButton = {
   text: string;
   selected: boolean;
 };
@@ -568,7 +568,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
               </div>
               {timeUp && (
                 <div>
-                  <p className={styles.timeUpMessage}>Time's up! You didn't select any art categories or elements.</p>
+                  <p className={styles.timeUpMessage}>Time&apos;s up! You didn&apos;t select any art categories or elements.</p>
                   <button className={styles.playAgainButton} onClick={restartGame}>
                     Start New Round
                   </button>
