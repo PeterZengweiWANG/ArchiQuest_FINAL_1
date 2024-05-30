@@ -72,7 +72,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   const [offerCancelledRight, setOfferCancelledRight] = useState<boolean>(false);
 
   useEffect(() => {
-    const tracks = ["/Autumn Whispers.mp3", "/Backdoor.mp3", "/Echoes20Freedom.mp3"];
+    const tracks = ["/Cyber.mp3", "/Melancholy Whisperings.mp3", "/Autumn Whispers.mp3", "/Backdoor.mp3", "/Echoes20Freedom.mp3"];
     musicPlayerRef.current = new MusicPlayer(tracks);
   }, []);
 
