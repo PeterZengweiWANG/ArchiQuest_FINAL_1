@@ -31,10 +31,12 @@ export default function ArtCollector({ artworkValue, onAcceptOffer, onOfferCance
   }, []);
 
   const generateInitialOfferMessage = useCallback(async () => {
-    const initialPrice = parseInt(artworkValue.slice(1).replace(/,/g, ""));
-    const prompt = `As an art collector, generate a sentence expressing your interest in purchasing the artwork and purpose the offer price of $${initialPrice.toLocaleString()}.`;
-    const message = await getGeminiText(prompt);
-    setInitialOfferMessage(message);
+    if (artworkValue) {
+      const initialPrice = parseInt(artworkValue.slice(1).replace(/,/g, ""));
+      const prompt = `As an art collector, generate a sentence expressing your interest in purchasing the artwork and purpose the offer price of $${initialPrice.toLocaleString()}.`;
+      const message = await getGeminiText(prompt);
+      setInitialOfferMessage(message);
+    }
   }, [artworkValue]);
 
   useEffect(() => {
@@ -44,11 +46,11 @@ export default function ArtCollector({ artworkValue, onAcceptOffer, onOfferCance
   const generateArtCollector = async () => {
     const artCollectorNationality = await getGroqCompletion("", 10, generateArtCollectorNationalityPrompt, 0.8, 0.9);
     setArtCollectorNationality(artCollectorNationality.trim());
-
+  
     const artCollectorName = await getGroqCompletion(artCollectorNationality, 10, generateArtCollectorNamePrompt, 0.8, 0.9);
     const trimmedArtCollectorName = artCollectorName.trim().replace(/^.*?\s/, '');
     setArtCollectorName(trimmedArtCollectorName);
-
+  
     const artCollectorDescription = `A portrait of ${trimmedArtCollectorName}, a ${artCollectorNationality} art collector, including their appearance, attire, and any distinguishing features.`;
     const artCollectorImageUrl = await generateImageFal(artCollectorDescription, "portrait_4_3");
     setArtCollectorImage(artCollectorImageUrl);

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getGroqCompletion, generateImageFal, getGeminiVision, getGeminiText } from "./ai";
 import {
-  generateThemePrompt,
+  generateTitlePrompt,
   generateElementsPrompt,
-  generateArtStylePrompt,
+  generateThemePrompt,
   generateArtCategoriesPrompt,
   generateImagePrompt,
   generateCritiquePrompt,
@@ -28,8 +28,8 @@ type GameProps = {
 };
 
 export default function Game({ onPlayAgain, gameMode }: GameProps) {
+  const [title, setTitle] = useState<string>("");
   const [theme, setTheme] = useState<string>("");
-  const [artStyle, setArtStyle] = useState<string>("");
   const [artCategoriesLeft, setArtCategoriesLeft] = useState<SelectableButton[]>([]);
   const [artCategoriesRight, setArtCategoriesRight] = useState<SelectableButton[]>([]);
   const [selectedArtCategoriesLeft, setSelectedArtCategoriesLeft] = useState<string[]>([]);
@@ -72,18 +72,18 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   const [offerCancelledRight, setOfferCancelledRight] = useState<boolean>(false);
 
   useEffect(() => {
-    const tracks = ["/Autumn Whispers.mp3", "/Backdoor.mp3", "/Echoes20Freedom.mp3"];
+    const tracks = ["/Autumn Whispers.mp3", "/Cyber.mp3","/Melancholy Whisperings.mp3", "/Backdoor.mp3", "/Echoes20Freedom.mp3"];
     musicPlayerRef.current = new MusicPlayer(tracks);
   }, []);
 
   const generateThemeAndArtStyleAndCategories = useCallback(async () => {
-    const [generatedTheme, generatedArtStyle, generatedArtCategories] = await Promise.all([
+    const [generatedTitle, generatedTheme, generatedArtCategories] = await Promise.all([
+      getGroqCompletion("", 32, generateTitlePrompt, 0.8, 0.9),
       getGroqCompletion("", 32, generateThemePrompt, 0.8, 0.9),
-      getGroqCompletion("", 32, generateArtStylePrompt, 0.8, 0.9),
       getGroqCompletion("", 128, generateArtCategoriesPrompt, 0.8, 0.9),
     ]);
+    setTitle(generatedTitle.trim());
     setTheme(generatedTheme.trim());
-    setArtStyle(generatedArtStyle.trim());
 
     const artCategoryArray = generatedArtCategories.split(",");
     const artCategories = artCategoryArray.map((text: string) => ({
@@ -95,7 +95,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     setSelectedArtCategoriesLeft([]);
     setSelectedArtCategoriesRight([]);
 
-    generateElements(generatedTheme);
+    generateElements(generatedTitle);
   }, []);
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   const generateImageRight = useCallback(async () => {
     setIsGeneratingRight(true);
     const imageDescription = await getGroqCompletion(
-      `Describe an artwork in the style of ${artStyle} that belongs to the following categories: ${selectedArtCategoriesRight.join(
+      `Describe an artwork in the style of ${player2ArtStyle} that belongs to the following categories: ${selectedArtCategoriesRight.join(
         ", "
       )} and includes: ${selectedElementsRight.join(", ")}`,
       256,
@@ -153,18 +153,18 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     setValueRight(`$${valuationNumber.toLocaleString()}`);
 
     setIsGeneratingRight(false);
-  }, [artStyle, selectedArtCategoriesRight, selectedElementsRight]);
+  }, [player2ArtStyle, selectedArtCategoriesRight, selectedElementsRight]);
 
   useEffect(() => {
     if (gameMode === "playerVsAI" && currentPlayer === "right" && !isGeneratingRight) {
       AIPlayer.playTurn(
         artCategoriesRight,
         elementsRight,
-        artStyle,
+        theme,
         generateImageRight
       );
     }
-  }, [gameMode, currentPlayer, isGeneratingRight, artCategoriesRight, elementsRight, artStyle, generateImageRight]);
+  }, [gameMode, currentPlayer, isGeneratingRight, artCategoriesRight, elementsRight, theme, generateImageRight]);
 
   useEffect(() => {
     if (currentRound === 3 && (offerAcceptedLeft || offerCancelledLeft || offerAcceptedRight || offerCancelledRight)) {
@@ -172,9 +172,9 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     }
   }, [currentRound, offerAcceptedLeft, offerCancelledLeft, offerAcceptedRight, offerCancelledRight]);
 
-  const generateElements = async (theme: string) => {
+  const generateElements = async (title: string) => {
     const elementString = await getGroqCompletion(
-      theme,
+      title,
       256,
       generateElementsPrompt,
       0.8,
@@ -259,7 +259,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   const generateImageLeft = async () => {
     setIsGeneratingLeft(true);
     const imageDescription = await getGroqCompletion(
-      `Describe an artwork in the style of ${artStyle} that belongs to the following categories: ${selectedArtCategoriesLeft.join(
+      `Describe an artwork in the style of ${player1ArtStyle} that belongs to the following categories: ${selectedArtCategoriesLeft.join(
         ", "
       )} and includes: ${selectedElementsLeft.join(", ")}`,
       256,
@@ -349,8 +349,8 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
       setSeeResultEnabled(true);
     } else {
       setCurrentRound((prevRound) => prevRound + 1);
+      setTitle("");
       setTheme("");
-      setArtStyle("");
       setArtCategoriesLeft([]);
       setArtCategoriesRight([]);
       setSelectedArtCategoriesLeft([]);
@@ -392,13 +392,13 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.newpage}>
       {!characterCreationDone ? (
         <CharacterCreationPage onConfirm={handleCharacterCreationConfirm} />
       ) : (
         <>
-          <h2 className={styles.title}>Theme: {theme}</h2>
-          <h3 className={styles.subtitle}>Art Style: {artStyle}</h3>
+          <h2 className={styles.title}>Title: {title}</h2>
+          <h3 className={styles.subtitle}>Theme: {theme}</h3>
           <p className={styles.timer}>Time Left: {timeLeft} seconds</p>
 
           {gameEnded ? (
@@ -568,7 +568,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
               </div>
               {timeUp && (
                 <div>
-                  <p className={styles.timeUpMessage}>Time&apos;s up! You didn&apos;t select any art categories or elements.</p>
+                  <p className={styles.timeUpMessage}>Time's up! You didn't select any art categories or elements.</p>
                   <button className={styles.playAgainButton} onClick={restartGame}>
                     Start New Round
                   </button>
