@@ -10,9 +10,10 @@ import styles from "./ArtCollector.module.css";
 type ArtCollectorProps = {
   artworkValue: string;
   onAcceptOffer: (price: number) => void;
+  onOfferCancelled: () => void; // Added this function for offer cancelled situation :)
 };
 
-export default function ArtCollector({ artworkValue, onAcceptOffer }: ArtCollectorProps) {
+export default function ArtCollector({ artworkValue, onAcceptOffer, onOfferCancelled }: ArtCollectorProps) {
   const [artCollectorImage, setArtCollectorImage] = useState<string>("");
   const [artCollectorName, setArtCollectorName] = useState<string>("");
   const [artCollectorNationality, setArtCollectorNationality] = useState<string>("");
@@ -91,6 +92,7 @@ export default function ArtCollector({ artworkValue, onAcceptOffer }: ArtCollect
       setNegotiationPrices((prevPrices) => [...prevPrices, { price: 0, accepted: false }]);
       setOfferCancelled(true);
       setNegotiationMessage("I've decided to cancel the offer. The negotiation has failed to reach a satisfactory agreement.");
+      onOfferCancelled(); // Call the onOfferCancelled prop
     } else {
       const newPrice = parseInt(newOffer.replace(/[^0-9]/g, ""));
       if (newPrice >= 100 && newPrice <= 1000000) {

@@ -330,3 +330,23 @@
   background-color: #d9c8b4;
   cursor: not-allowed;
 }
+
+.seeResultButton {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  background-color: #8c6e5e;
+  color: #f0e8d8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.seeResultButton:disabled {
+  background-color: #d9c8b4;
+  cursor: not-allowed;
+}
+
+

@@ -55,17 +55,20 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   const [playerCredit, setPlayerCredit] = useState<number>(0);
   const [player1Money, setPlayer1Money] = useState<number>(0);
   const [player2Money, setPlayer2Money] = useState<number>(0);
-
   const [currentRound, setCurrentRound] = useState<number>(1);
   const [player1MoneyBalance, setPlayer1MoneyBalance] = useState<number>(0);
   const [player2MoneyBalance, setPlayer2MoneyBalance] = useState<number>(0);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
-
   const [player1Name, setPlayer1Name] = useState<string>("");
   const [player2Name, setPlayer2Name] = useState<string>("");
   const [player1ArtStyle, setPlayer1ArtStyle] = useState<string>("");
   const [player2ArtStyle, setPlayer2ArtStyle] = useState<string>("");
   const [characterCreationDone, setCharacterCreationDone] = useState<boolean>(false);
+  const [seeResultEnabled, setSeeResultEnabled] = useState<boolean>(false);
+  const [offerAcceptedLeft, setOfferAcceptedLeft] = useState<boolean>(false);
+  const [offerCancelledLeft, setOfferCancelledLeft] = useState<boolean>(false);
+  const [offerAcceptedRight, setOfferAcceptedRight] = useState<boolean>(false);
+  const [offerCancelledRight, setOfferCancelledRight] = useState<boolean>(false);
 
   useEffect(() => {
     const tracks = ["/Autumn Whispers.mp3", "/Backdoor.mp3", "/Echoes20Freedom.mp3"];
@@ -103,7 +106,6 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     }
   }, [timeLeft, selectedArtCategoriesLeft, selectedArtCategoriesRight, selectedElementsLeft, selectedElementsRight, currentPlayer]);
 
-  // AI Player
   useEffect(() => {
     if (gameMode === "playerVsAI" && currentPlayer === "right" && !isGeneratingRight) {
       AIPlayer.playTurn(
@@ -114,6 +116,12 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
       );
     }
   }, [gameMode, currentPlayer, isGeneratingRight, artCategoriesRight, elementsRight, artStyle]);
+
+  useEffect(() => {
+    if (currentRound === 3 && (offerAcceptedLeft || offerCancelledLeft || offerAcceptedRight || offerCancelledRight)) {
+      setSeeResultEnabled(true);
+    }
+  }, [currentRound, offerAcceptedLeft, offerCancelledLeft, offerAcceptedRight, offerCancelledRight]);
 
   const generateThemeAndArtStyleAndCategories = async () => {
     const [generatedTheme, generatedArtStyle, generatedArtCategories] = await Promise.all([
@@ -232,7 +240,6 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
       0.8,
       0.9
     );
-    // Gemini-Generated Valuation Function Left
     const imageUrl = await generateImageFal(imageDescription, "landscape_16_9");
     setImgLeft(imageUrl);
 
@@ -261,7 +268,6 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
       0.8,
       0.9
     );
-    // Gemini-Generated Valuation Function Right
     const imageUrl = await generateImageFal(imageDescription, "landscape_16_9");
     setImgRight(imageUrl);
 
@@ -305,17 +311,18 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
   const handleAcceptOffer = (playerId: string, price: number) => {
     if (playerId === "left") {
       setPlayer1MoneyBalance((prevBalance) => prevBalance + price);
+      setOfferAcceptedLeft(true);
     } else if (playerId === "right") {
       setPlayer2MoneyBalance((prevBalance) => prevBalance + price);
+      setOfferAcceptedRight(true);
     }
   };
 
-  const handleNegotiate = (playerId: string, value: number) => {
-    const negotiatedValue = Math.floor(value * 1.1); // Increase the value by 10%
+  const handleOfferCancelled = (playerId: string) => {
     if (playerId === "left") {
-      setPlayer1MoneyBalance((prevBalance) => prevBalance + negotiatedValue);
+      setOfferCancelledLeft(true);
     } else if (playerId === "right") {
-      setPlayer2MoneyBalance((prevBalance) => prevBalance + negotiatedValue);
+      setOfferCancelledRight(true);
     }
   };
 
@@ -338,7 +345,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
 
   const handleNextRound = () => {
     if (currentRound === 3) {
-      setGameEnded(true);
+      setSeeResultEnabled(true);
     } else {
       setCurrentRound((prevRound) => prevRound + 1);
       setTheme("");
@@ -366,12 +373,8 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
     }
   };
 
-  const handleRestartGame = () => {
-    setGameEnded(false);
-    setCurrentRound(1);
-    setPlayer1MoneyBalance(0);
-    setPlayer2MoneyBalance(0);
-    onPlayAgain();
+  const handleSeeResult = () => {
+    setGameEnded(true);
   };
 
   const handleCharacterCreationConfirm = (
@@ -401,7 +404,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
             <EndOfGameSettlement
               player1MoneyBalance={player1MoneyBalance}
               player2MoneyBalance={player2MoneyBalance}
-              onRestartGame={handleRestartGame}
+              onRestartGame={restartGame}
             />
           ) : (
             <>
@@ -463,6 +466,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
                         <ArtCollector
                           artworkValue={valueLeft}
                           onAcceptOffer={(price) => handleAcceptOffer("left", price)}
+                          onOfferCancelled={() => handleOfferCancelled("left")}
                         />
                       </div>
                     )}
@@ -525,6 +529,7 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
                         <ArtCollector
                           artworkValue={valueRight}
                           onAcceptOffer={(price) => handleAcceptOffer("right", price)}
+                          onOfferCancelled={() => handleOfferCancelled("right")}
                         />
                       </div>
                     )}
@@ -543,6 +548,13 @@ export default function Game({ onPlayAgain, gameMode }: GameProps) {
                     Go Next Round
                   </button>
                 )}
+                <button
+                  className={styles.seeResultButton}
+                  onClick={handleSeeResult}
+                  disabled={!seeResultEnabled}
+                >
+                  See Result
+                </button>
               </div>
               <div className={styles.generateButtonContainer}>
                 <button
